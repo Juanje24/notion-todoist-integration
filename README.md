@@ -60,7 +60,7 @@ Your database ID are the 32 characters that are listed after your username, but 
 
 For example: 
 
-https://www.notion.so/[yourusername]/[YOUR ID]?v=...
+https://www.notion.so/[yourusername]/[YOURID]?v=...
 
 **IMPORTANT: For this script to work, you must go to the page where your database is, click the three dots at the top right, and click “Connect to” at the bottom. Scroll down the list until you find the name of the integration that you made in the previous step.**
 
