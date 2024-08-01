@@ -13,7 +13,7 @@ cd notion-todoist-integration
 
 This script also uses the requests library, which can be installed using the pip command. 
 
-## Setup
+## Setupt
 
 The script requires 4 pieces of information to work, this can be found at the top of the tasks.py file.
 
@@ -36,13 +36,13 @@ The token should be a series of alphanumeric characters.
 
 Head over to [https://www.notion.so/profile/integrations](https://www.notion.so/profile/integrations) and hit “New Integration” and name it whatever you please.
 
-![Hit the new integration button ](Untitled%206e87b0d7611d43f9a7dd52eae2bf6615/Untitled.png)
+![Hit the new integration button ](integration.png)
 
 Hit the new integration button 
 
 Select the workspace that you use, and keep the “Type” to Internal. 
 
-![Ensure the Type is internal](Untitled%206e87b0d7611d43f9a7dd52eae2bf6615/Untitled%201.png)
+![Ensure the Type is internal](type.png)
 
 Ensure the Type is internal
 
@@ -52,7 +52,7 @@ After creating the integration, it should take you to a a page that has the “I
 
 This is an **IMPORTANT** step! Go into your Notion workspace and create a database that looks as follows. 
 
-![Untitled](Untitled%206e87b0d7611d43f9a7dd52eae2bf6615/Untitled%202.png)
+![Database Setup](db.png)
 
 The name of the database is not important, but the name of the columns is, so **make sure they match!** 
 
