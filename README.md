@@ -1,4 +1,6 @@
-### Notion and Todoist Task Integration using API's
+# Untitled
+
+Created time: August 1, 2024 1:49 PM
 
 ## Getting started
 
@@ -32,15 +34,15 @@ The token should be a series of alphanumeric characters.
 
 ### Notion API Token
 
-Head over to https://www.notion.so/profile/integrations and hit “New Integration” and name it whatever you please.
+Head over to [https://www.notion.so/profile/integrations](https://www.notion.so/profile/integrations) and hit “New Integration” and name it whatever you please.
 
-![Hit the new integration button ](https://prod-files-secure.s3.us-west-2.amazonaws.com/33f64926-f45e-42d2-b4e2-658905729831/f11e0d41-6bd6-413d-a31a-73c558a9d830/Untitled.png)
+![Hit the new integration button ](Untitled%206e87b0d7611d43f9a7dd52eae2bf6615/Untitled.png)
 
 Hit the new integration button 
 
 Select the workspace that you use, and keep the “Type” to Internal. 
 
-![Ensure the Type is internal](https://prod-files-secure.s3.us-west-2.amazonaws.com/33f64926-f45e-42d2-b4e2-658905729831/69dff017-1d4f-409a-8812-48bf786bcc1e/Untitled.png)
+![Ensure the Type is internal](Untitled%206e87b0d7611d43f9a7dd52eae2bf6615/Untitled%201.png)
 
 Ensure the Type is internal
 
@@ -50,7 +52,7 @@ After creating the integration, it should take you to a a page that has the “I
 
 This is an **IMPORTANT** step! Go into your Notion workspace and create a database that looks as follows. 
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/33f64926-f45e-42d2-b4e2-658905729831/45aea4ce-32f3-48b4-bad4-fa90fff60324/Untitled.png)
+![Untitled](Untitled%206e87b0d7611d43f9a7dd52eae2bf6615/Untitled%202.png)
 
 The name of the database is not important, but the name of the columns is, so **make sure they match!** 
 
