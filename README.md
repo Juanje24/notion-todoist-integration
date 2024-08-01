@@ -34,13 +34,13 @@ The token should be a series of alphanumeric characters.
 
 Head over to [https://www.notion.so/profile/integrations](https://www.notion.so/profile/integrations) and hit “New Integration” and name it whatever you please.
 
-![Hit the new integration button ](integration.png)
+![Hit the new integration button ](images/integration.png)
 
 Hit the new integration button 
 
 Select the workspace that you use, and keep the “Type” to Internal. 
 
-![Ensure the Type is internal](type.png)
+![Ensure the Type is internal](images/type.png)
 
 Ensure the Type is internal
 
@@ -50,7 +50,7 @@ After creating the integration, it should take you to a a page that has the “I
 
 This is an **IMPORTANT** step! Go into your Notion workspace and create a database that looks as follows. 
 
-![Database Setup](db.png)
+![Database Setup](images/db.png)
 
 The name of the database is not important, but the name of the columns is, so **make sure they match!** 
 
