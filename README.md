@@ -1,6 +1,4 @@
-# Untitled
-
-Created time: August 1, 2024 1:49 PM
+# Notion and Todoist Task Integration with API's
 
 ## Getting started
 
