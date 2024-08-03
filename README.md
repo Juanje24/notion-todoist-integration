@@ -1,6 +1,6 @@
 # Notion and Todoist Task Integration with API's
 
-## Getting started
+## Getting Started
 
 Clone the repository. 
 
