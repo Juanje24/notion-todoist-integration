@@ -1,5 +1,9 @@
 # Notion and Todoist Task Integration with API's
 
+## Demo 
+
+A demo of this project is availibe [here](https://www.dennys.ca/restaurant/alberta/calgary-crowfoot/menu/).
+
 ## Getting Started
 
 Clone the repository. 
