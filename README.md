@@ -15,7 +15,7 @@ cd notion-todoist-integration
 
 This script also uses the requests library, which can be installed using the pip command. 
 
-## Setupt
+## Setup
 
 The script requires 4 pieces of information to work, this can be found at the top of the tasks.py file.
 
@@ -90,7 +90,7 @@ And your tasks should show up in your Notion database!
 
 ## Extra & Notes
 
-The script only adds tasks that are not currently in your Notion database. I tend to run the script at the end of each day to keep tasks in my Todoist also in Notion. Other services do offer an integration like this, but they typically have usage limits and are hard to keep running over time. Overtime, this line of code may have to be changed, as a new version of the API may be released. 
+The script only adds tasks that are not currently in your Notion database. I tend to run the script at the end of each day to keep tasks in my Todoist also in Notion. Other services do offer an integration like this, but they typically have usage limits and are hard to keep running over time. Over time, this line of code may have to be changed, as a new version of the API may be released. 
 
 ```bash
 "Notion-Version": "2022-06-28"  # this is not the version of notion that you are on, but rather the api version -see the readme file for more
