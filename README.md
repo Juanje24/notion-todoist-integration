@@ -2,7 +2,7 @@
 
 ## Demo 
 
-A demo of this project is available [here](https://www.dennys.ca/restaurant/alberta/calgary-crowfoot/menu/).
+A demo of this project is available [here](https://www.threads.net/@farooqureshii/post/C-O6CoNPwN7).
 
 ## Getting Started
 
