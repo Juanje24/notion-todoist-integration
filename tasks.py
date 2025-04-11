@@ -13,11 +13,7 @@ def get_todoist_tasks():
         "Authorization": f"Bearer {TODOIST_API_TOKEN}"
     }
     response = requests.get(url, headers=headers)
-
-    # otherwise raise an error 
     response.raise_for_status()  
-
-    # returns the the list of tasks
     return response.json()
 
 # fetching the tasks from notion (this is needed to compare the tasks in notion vs todoist)
@@ -29,12 +25,81 @@ def get_notion_tasks():
         "Notion-Version": "2022-06-28"
     }
     response = requests.post(url, headers=headers)
-
-    # otherwise raise an error
     response.raise_for_status()  
-
-    # return the list of tasks
     return response.json()
+
+def map_todoist_to_notion_properties(task):
+    """
+    Mapea los datos de una tarea de Todoist a las propiedades usadas en Notion.
+    """
+    # Extraer y formatear la fecha de vencimiento
+    due_date = task.get("due")
+    start_date = due_date.get("date") if due_date else None
+    if start_date:
+        start_date = start_date.split('T')[0]
+
+    # Mapeo de la prioridad (Todoist: 1=más baja, 4=más alta)
+    todoist_priority = task.get("priority", 1)
+    notion_priority = str(5 - todoist_priority)
+
+    # Obtener tag: si no existe "tag", se usa "labels" en su lugar
+    tag = task.get("tag")
+    if not tag:
+        labels = task.get("labels")
+        if labels:
+            tag = ", ".join(map(str, labels))
+        else:
+            tag = ""
+
+    properties = {
+        "Task Name": task["content"],
+        "Description": task.get("description", ""),
+        "Prioridad": notion_priority,
+        "Tag": tag,
+        "Due Date": start_date  # Puede ser None
+    }
+    return properties
+
+def extract_notion_properties(notion_item):
+    """
+    Extrae las propiedades relevantes de una tarea en Notion para compararlas.
+    """
+    props = {}
+    # Título
+    title_list = notion_item["properties"]["Task Name"].get("title", [])
+    props["Task Name"] = title_list[0]["text"]["content"] if title_list else ""
+    
+    # Descripción
+    rich_text_list = notion_item["properties"]["Description"].get("rich_text", [])
+    props["Description"] = rich_text_list[0]["text"]["content"] if rich_text_list else ""
+    
+    # Prioridad
+    select_prop = notion_item["properties"]["Prioridad"].get("select")
+    props["Prioridad"] = select_prop["name"] if select_prop else ""
+    
+    # Tag
+    tag_list = notion_item["properties"]["Tag"].get("rich_text", [])
+    props["Tag"] = tag_list[0]["text"]["content"] if tag_list else ""
+    
+    # Due Date
+    date_prop = notion_item["properties"].get("Due Date", {}).get("date")
+    props["Due Date"] = date_prop["start"] if date_prop and date_prop.get("start") else None
+    
+    return props
+
+def task_needs_update(todoist_task, notion_item):
+    """
+    Compara la tarea de Todoist con la existente en Notion. Retorna True si hay diferencias.
+    """
+    todoist_props = map_todoist_to_notion_properties(todoist_task)
+    notion_props = extract_notion_properties(notion_item)
+    
+    # Compara cada campo. Si alguno difiere, se requiere actualizar.
+    for key in ["Task Name", "Description", "Prioridad", "Tag", "Due Date"]:
+        if todoist_props.get(key) != notion_props.get(key):
+            print(f"Diferencia en '{key}': Todoist tiene '{todoist_props.get(key)}' y Notion '{notion_props.get(key)}'")
+            return True
+    return False
 
 # add task to notion
 def add_task_to_notion(task):
@@ -42,27 +107,17 @@ def add_task_to_notion(task):
     headers = {
         "Authorization": f"Bearer {NOTION_API_TOKEN}",
         "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28"  # this is not the version of notion that you are on, but rather the api version -see the readme file for more 
+        "Notion-Version": "2022-06-28"
     }
-
-
-    # fetch the due date, if there is no due date, then we leave that field blank
-    due_date = task.get("due")
-    start_date = due_date.get("date") if due_date else None
+    props = map_todoist_to_notion_properties(task)
     
-    # fetching for the due date in todoist returns a date that looks looks like something like this (ex): 2019-12-11T22:36:50.000000Z
-    # we don't want that, so we split it ito date and time, and take just the date portion
-    # that leaves us with 2019-12-11 (for example)
-    if start_date:
-        start_date = start_date.split('T')[0]  # Extract date only
-
-    # crate new task properties for otion
+    # Construir las propiedades para la petición
     properties = {
         "Task Name": {
             "title": [
                 {
                     "text": {
-                        "content": task["content"]
+                        "content": props["Task Name"]
                     }
                 }
             ]
@@ -71,62 +126,167 @@ def add_task_to_notion(task):
             "rich_text": [
                 {
                     "text": {
-                        "content": task.get("description", "")
+                        "content": props["Description"]
+                    }
+                }
+            ]
+        },
+        "Prioridad": {
+            "select": {
+                "name": props["Prioridad"]
+            }
+        },
+        "Tag": {
+            "rich_text": [
+                {
+                    "text": {
+                        "content": props["Tag"]
                     }
                 }
             ]
         }
     }
-
-    # we can only add the due date for the task if the date exists, checking for that 
-    if start_date:
+    
+    if props["Due Date"]:
         properties["Due Date"] = {
             "date": {
-                "start": start_date
+                "start": props["Due Date"]
             }
         }
-
-    # the database to which we want to send it
+    
     data = {
         "parent": {"database_id": NOTION_DATABASE_ID},
         "properties": properties
     }
-
-    # information that will show up in the cmd prompt when running teh script
-    print("Sending request data:", data)  # Debug: Check the request data
-
-
-    # return the result, otherwise print an error
+    
+    print("Enviando datos para crear tarea:", data)
     response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()  
+    response.raise_for_status()
     return response.json()
 
+# update an existing task in Notion
+def update_task_in_notion(page_id, task):
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    headers = {
+        "Authorization": f"Bearer {NOTION_API_TOKEN}",
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28"
+    }
+    props = map_todoist_to_notion_properties(task)
+    
+    properties = {
+        "Task Name": {
+            "title": [
+                {
+                    "text": {
+                        "content": props["Task Name"]
+                    }
+                }
+            ]
+        },
+        "Description": {
+            "rich_text": [
+                {
+                    "text": {
+                        "content": props["Description"]
+                    }
+                }
+            ]
+        },
+        "Prioridad": {
+            "select": {
+                "name": props["Prioridad"]
+            }
+        },
+        "Tag": {
+            "rich_text": [
+                {
+                    "text": {
+                        "content": props["Tag"]
+                    }
+                }
+            ]
+        }
+    }
+    
+    if props["Due Date"]:
+        properties["Due Date"] = {
+            "date": {
+                "start": props["Due Date"]
+            }
+        }
+    
+    data = {
+        "properties": properties
+    }
+    
+    print("Enviando datos para actualizar tarea:", data)
+    response = requests.patch(url, headers=headers, json=data)
+    response.raise_for_status()
+    return response.json()
+
+# delete (archive) task in Notion
+def delete_task_in_notion(page_id):
+    """
+    La API de Notion no permite eliminar páginas de forma definitiva,
+    pero se puede 'archivar' la página estableciendo el flag 'archived' a True.
+    """
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    headers = {
+        "Authorization": f"Bearer {NOTION_API_TOKEN}",
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28"
+    }
+    data = {
+        "archived": True
+    }
+    
+    print(f"Archivando la tarea en Notion con page id: {page_id}")
+    response = requests.patch(url, headers=headers, json=data)
+    response.raise_for_status()
+    return response.json()
 
 # run the script
 def main():
     try:
         todoist_tasks = get_todoist_tasks()
         notion_tasks = get_notion_tasks()
-
-
-        # we need to check if the task already exists or not
-        notion_task_titles = set(
-            item["properties"]["Task Name"]["title"][0]["text"]["content"]
-            for item in notion_tasks["results"]
-        )
-
-        # new tasks are one that are not currently in notion_task_titls
-        new_tasks = [task for task in todoist_tasks if task["content"] not in notion_task_titles]
-
-        # so we oly add those
+        
+        # Crear un diccionario para asociar el título de la tarea en Notion con el item completo (para poder comparar)
+        notion_tasks_dict = {
+            item["properties"]["Task Name"]["title"][0]["text"]["content"]: item
+            for item in notion_tasks["results"] if item["properties"]["Task Name"].get("title")
+        }
+        
+        # Tareas nuevas: las que no existen en Notion
+        new_tasks = [task for task in todoist_tasks if task["content"] not in notion_tasks_dict]
         for task in new_tasks:
             result = add_task_to_notion(task)
-            print(f"Added task to Notion: {result}")
-
-
-    # errors
+            print(f"Tarea añadida a Notion: {result}")
+        
+        # Tareas existentes: se comparan y se actualizan solo si es necesario
+        existing_tasks = [task for task in todoist_tasks if task["content"] in notion_tasks_dict]
+        for task in existing_tasks:
+            notion_item = notion_tasks_dict[task["content"]]
+            if task_needs_update(task, notion_item):
+                print(f"La tarea '{task['content']}' presenta cambios, se procede a la actualización...")
+                page_id = notion_item["id"]
+                result = update_task_in_notion(page_id, task)
+                print(f"Tarea actualizada en Notion: {result}")
+            else:
+                print(f"La tarea '{task['content']}' no presenta cambios, se omite la actualización.")
+        
+        # Tareas en Notion que ya no están en Todoist: se archivarán (eliminan)
+        todoist_titles = {task["content"] for task in todoist_tasks}
+        for title, notion_item in notion_tasks_dict.items():
+            if title not in todoist_titles:
+                print(f"La tarea '{title}' ya no existe en Todoist, se procederá a archivar.")
+                page_id = notion_item["id"]
+                result = delete_task_in_notion(page_id)
+                print(f"Tarea archivada en Notion: {result}")
+                
     except requests.RequestException as e:
-        print(f"An error occurred: {e}")
+        print(f"Ocurrió un error: {e}")
 
 if __name__ == "__main__":
     main()
