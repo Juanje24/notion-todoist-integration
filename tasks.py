@@ -1,10 +1,16 @@
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
 
 # tokens & id's - see the readme.md file for where to find these
-TODOIST_API_TOKEN = ""
-NOTION_API_TOKEN = ""
-NOTION_DATABASE_ID = ""
-TODOIST_INBOX_PROJECT_ID = ""  
+TODOIST_API_TOKEN = os.getenv("TODOIST_API_TOKEN")
+NOTION_API_TOKEN = os.getenv("NOTION_API_TOKEN")
+NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
+TODOIST_INBOX_PROJECT_ID = os.getenv("TODOIST_INBOX_PROJECT_ID")
 
 # fetching tasks from todoist
 def get_todoist_tasks():
