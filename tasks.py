@@ -1,8 +1,12 @@
 import requests
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
+
+# Solo carga .env si estás trabajando localmente
+if os.getenv("GITHUB_ACTIONS") != "true":
+    from dotenv import load_dotenv
+    load_dotenv()
+
 
 
 
@@ -41,8 +45,7 @@ def map_todoist_to_notion_properties(task):
     # Extraer y formatear la fecha de vencimiento
     due_date = task.get("due")
     start_date = due_date.get("date") if due_date else None
-    if start_date:
-        start_date = start_date.split('T')[0]
+    # No hacer split, así se conserva la hora si existe
 
     # Mapeo de la prioridad (Todoist: 1=más baja, 4=más alta)
     todoist_priority = task.get("priority", 1)
@@ -62,7 +65,7 @@ def map_todoist_to_notion_properties(task):
         "Description": task.get("description", ""),
         "Prioridad": notion_priority,
         "Tag": tag,
-        "Due Date": start_date  # Puede ser None
+        "Due Date": start_date  # Puede ser None, pero ahora incluye hora si existe
     }
     return properties
 
