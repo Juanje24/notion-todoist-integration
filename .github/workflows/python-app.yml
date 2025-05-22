@@ -3,8 +3,6 @@ name: Sincronizar tareas Todoist → Notion
 on:
   schedule:
     - cron: "0 8 * * *"   # 10:00 local
-    - cron: "0 10 * * *"  # 12:00 local
-    - cron: "0 12 * * *"  # 14:00 local
     - cron: "0 14 * * *"  # 16:00 local
     - cron: "0 16 * * *"  # 18:00 local
     - cron: "0 18 * * *"  # 20:00 local
