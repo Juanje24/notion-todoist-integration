@@ -28,14 +28,15 @@ def get_todoist_tasks():
 
 # fetching the tasks from notion (this is needed to compare the tasks in notion vs todoist)
 def get_notion_tasks():
-    url = f"https://api.notion.com/v1/data_sources/{NOTION_DATABASE_ID}"
+    url = f"https://api.notion.com/v1/data_sources/{NOTION_DATABASE_ID}/query"
     headers = {
         "Authorization": f"Bearer {NOTION_API_TOKEN}",
-        "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28"
+        "Accept": "application/json",
+        "Notion-Version": "2025-09-03",
+        "Content-Type": "application/json"
     }
     response = requests.post(url, headers=headers)
-    response.raise_for_status()  
+    response.raise_for_status()
     return response.json()
 
 def map_todoist_to_notion_properties(task):
@@ -115,8 +116,9 @@ def add_task_to_notion(task):
     url = "https://api.notion.com/v1/pages"
     headers = {
         "Authorization": f"Bearer {NOTION_API_TOKEN}",
+        "Accept": "application/json",
         "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28"
+        "Notion-Version": "2025-09-03"
     }
     props = map_todoist_to_notion_properties(task)
     
@@ -164,12 +166,13 @@ def add_task_to_notion(task):
         }
     
     data = {
-        "parent": {"database_id": NOTION_DATABASE_ID},
+        "parent": {"database_id": "15c3b2a236bc4d068b073285c6ee7f39"},
         "properties": properties
     }
     
     print("Enviando datos para crear tarea:", data)
     response = requests.post(url, headers=headers, json=data)
+    print("Respuesta de Notion:", response.text)
     response.raise_for_status()
     return response.json()
 
@@ -179,7 +182,7 @@ def update_task_in_notion(page_id, task):
     headers = {
         "Authorization": f"Bearer {NOTION_API_TOKEN}",
         "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28"
+        "Notion-Version": "2025-09-03"
     }
     props = map_todoist_to_notion_properties(task)
     
@@ -244,7 +247,7 @@ def delete_task_in_notion(page_id):
     headers = {
         "Authorization": f"Bearer {NOTION_API_TOKEN}",
         "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28"
+        "Notion-Version": "2025-09-03"
     }
     data = {
         "archived": True
@@ -295,7 +298,7 @@ def main():
                 print(f"Tarea archivada en Notion: {result}")
                 
     except requests.RequestException as e:
-        print(f"Ocurrió un error: {e}")
+        print(f"Ocurrió un error: {e.response.text if e.response else str(e)}")
 
 if __name__ == "__main__":
     main()
