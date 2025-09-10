@@ -1,9 +1,10 @@
 name: Sincronizar tareas Todoist → Notion
 
 on:
-  schedule:
-    - cron: "0 * * * *"  # Cada hora
   workflow_dispatch:
+  repository_dispatch:
+    types: [notion_trigger]
+
 
 jobs:
   run-sync:
