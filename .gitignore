@@ -93,3 +93,4 @@ dmypy.json
 
 # Local development
 *.local
+.vercel
