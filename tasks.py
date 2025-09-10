@@ -28,7 +28,7 @@ def get_todoist_tasks():
 
 # fetching the tasks from notion (this is needed to compare the tasks in notion vs todoist)
 def get_notion_tasks():
-    url = f"https://api.notion.com/v1/databases/{NOTION_DATABASE_ID}/query"
+    url = f"https://api.notion.com/v1/data_sources/{NOTION_DATABASE_ID}"
     headers = {
         "Authorization": f"Bearer {NOTION_API_TOKEN}",
         "Content-Type": "application/json",
