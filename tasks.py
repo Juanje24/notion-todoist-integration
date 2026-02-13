@@ -19,9 +19,15 @@ TODOIST_INBOX_PROJECT_ID = os.getenv("TODOIST_INBOX_PROJECT_ID")
 # fetching tasks from todoist
 def get_todoist_tasks():
     headers = {"Authorization": f"Bearer {TODOIST_API_TOKEN}"}
-    r = requests.get(f"https://api.todoist.com/api/v1/tasks?project_id={TODOIST_INBOX_PROJECT_ID}", headers=headers, timeout=30)
+    r = requests.get(
+        f"https://api.todoist.com/api/v1/tasks?project_id={TODOIST_INBOX_PROJECT_ID}",
+        headers=headers,
+        timeout=30
+    )
     r.raise_for_status()
-    print(r.json())
+    data = r.json()
+    print(data)
+    return data.get("results", [])
 
 # fetching the tasks from notion (this is needed to compare the tasks in notion vs todoist)
 def get_notion_tasks():
