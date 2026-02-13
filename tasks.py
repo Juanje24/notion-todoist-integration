@@ -18,7 +18,7 @@ TODOIST_INBOX_PROJECT_ID = os.getenv("TODOIST_INBOX_PROJECT_ID")
 
 # fetching tasks from todoist
 def get_todoist_tasks():
-    url = f"https://api.todoist.com/rest/v2/tasks?project_id={TODOIST_INBOX_PROJECT_ID}"
+    url = f"https://api.todoist.com/api/v1/tasks?project_id={TODOIST_INBOX_PROJECT_ID}"
     headers = {
         "Authorization": f"Bearer {TODOIST_API_TOKEN}"
     }
